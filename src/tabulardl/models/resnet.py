@@ -4,12 +4,17 @@ from typing import List, Optional
 import torch
 from torch import nn
 
-from .mlp import SimpleTabularEmbedding
+from tabulardl.models.mlp import SimpleTabularEmbedding
 
 
 class ResNetBlock(nn.Module):
-    def __init__(self, d: int, d_hidden: int, hidden_dropout: Optional[float] = None,
-                 residual_dropout: Optional[float] = None):
+    def __init__(
+        self,
+        d: int,
+        d_hidden: int,
+        hidden_dropout: Optional[float] = None,
+        residual_dropout: Optional[float] = None,
+    ):
         super().__init__()
         self.layer = nn.Sequential(
             nn.BatchNorm1d(num_features=d),
@@ -17,7 +22,7 @@ class ResNetBlock(nn.Module):
             nn.ReLU(),
             nn.Dropout(p=hidden_dropout),
             nn.Linear(in_features=d_hidden, out_features=d),
-            nn.Dropout(p=residual_dropout)
+            nn.Dropout(p=residual_dropout),
         )
 
     def forward(self, x: torch.Tensor):
@@ -25,33 +30,51 @@ class ResNetBlock(nn.Module):
 
 
 class ResNet(nn.Module):
-    def __init__(self, *,
-                 in_features_num: int,
-                 categories: Optional[List[int]],
-                 d_embedding: int,
-                 d: int,
-                 d_hidden_factor: float,
-                 n_layers: int,
-                 hidden_dropout: float,
-                 residual_dropout: float,
-                 out_features: int):
+    def __init__(
+        self,
+        *,
+        in_features_num: int,
+        categories: Optional[List[int]],
+        d_embedding: int,
+        d: int,
+        d_hidden_factor: float,
+        n_layers: int,
+        hidden_dropout: float,
+        residual_dropout: float,
+        out_features: int,
+    ):
         super().__init__()
-        self.embedding = SimpleTabularEmbedding(categories=categories, embedding_dim=d_embedding)
-        self.input_linear = nn.Linear(in_features=in_features_num + len(categories) * d_embedding, out_features=d)
-        self.blocks = nn.Sequential(OrderedDict([
-            (str(i),
-             ResNetBlock(d=d,
-                         d_hidden=int(d * d_hidden_factor),
-                         hidden_dropout=hidden_dropout,
-                         residual_dropout=residual_dropout)) for i in range(n_layers)
-        ]))
+        self.embedding = SimpleTabularEmbedding(
+            categories=categories, embedding_dim=d_embedding
+        )
+        self.input_linear = nn.Linear(
+            in_features=in_features_num + len(categories) * d_embedding, out_features=d
+        )
+        self.blocks = nn.Sequential(
+            OrderedDict(
+                [
+                    (
+                        str(i),
+                        ResNetBlock(
+                            d=d,
+                            d_hidden=int(d * d_hidden_factor),
+                            hidden_dropout=hidden_dropout,
+                            residual_dropout=residual_dropout,
+                        ),
+                    )
+                    for i in range(n_layers)
+                ]
+            )
+        )
         self.output = nn.Sequential(
             nn.BatchNorm1d(num_features=d),
             nn.ReLU(),
-            nn.Linear(in_features=d, out_features=out_features)
+            nn.Linear(in_features=d, out_features=out_features),
         )
 
-    def forward(self, x_num: Optional[torch.FloatTensor], x_cat: Optional[torch.IntTensor]):
+    def forward(
+        self, x_num: Optional[torch.FloatTensor], x_cat: Optional[torch.IntTensor]
+    ):
         x = self.embedding(x_num, x_cat)
         x = self.input_linear(x)
         x = self.blocks(x)
@@ -59,6 +82,7 @@ class ResNet(nn.Module):
         x = x.squeeze(dim=-1)
 
         return x
+
 
 # class ResNet(nn.Module):
 #     def __init__(
