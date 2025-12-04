@@ -1,5 +1,4 @@
 version: 2
-
 updates:
   - package-ecosystem: "uv"
     directory: "/"
@@ -14,3 +13,4 @@ updates:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    rebase-strategy: "auto"
