@@ -19,6 +19,7 @@ from tabulardl.utils.data import (
     TabularMaskedLMDataset,
     generate_ple_boundaries,
 )
+from tabulardl.utils.paths import Paths
 
 
 class Objective:
@@ -28,7 +29,9 @@ class Objective:
         self.seed = seed
         self.device = device
         self.dataset_name = "adult"
-        self.split = TabularDataset.from_adult("data/raw/adult", random_state=seed)
+        self.split = TabularDataset.from_adult(
+            dir=Paths.data_raw / "adult", random_state=seed
+        )
 
         self.train_mlm_dataset = TabularMaskedLMDataset(self.split["train"])
         self.val_mlm_dataset = TabularMaskedLMDataset(self.split["validation"])

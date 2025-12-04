@@ -31,6 +31,7 @@ from tabulardl.utils.data import (
     generate_ple_boundaries,
 )
 from tabulardl.utils.metrics import Metrics, MetricsTracker
+from tabulardl.utils.paths import Paths
 
 
 class EarlyStopError(Exception):
@@ -370,7 +371,7 @@ def main():
         set_seed(seed)
 
         split = TabularDataset.from_adult(
-            f"data/raw/{dataset_name}", random_state=seed, device=device
+            dir=Paths.data_raw / f"{dataset_name}", random_state=seed, device=device
         )
 
         d_numerical = split["train"].d_numeric
