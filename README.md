@@ -1,28 +1,37 @@
-# Transformer-Based Model for Tabular Data
+# Transformer-based model for tabular data
 
-## Getting Started
+> [!NOTE]
+> Looking for the initial release (2023)? View the [initial release branch](https://github.com/wesselvanree/tabular-dl-transformer/tree/initial-release).
 
-First, we setup a conda environment with the required dependencies:
+## Getting started
+
+### Installing packages in a virtual environment
+
+This project uses `uv` to manage its dependencies. [Install uv](https://docs.astral.sh/uv/getting-started/installation/) on your local machine. Clone this repository to your local machine, and open a terminal window in this repository. Create a virtual environment using:
 
 ```
-conda create -n tabular-dl-transformer python=3.10 -y
-conda activate tabular-dl-transformer
-conda install pytorch::pytorch=2.0.0 -c pytorch -y
-conda install scikit-learn=1.2.2 pandas=2.0.1 tqdm=4.65.0 optuna=3.2.0 -c conda-forge -y
-pip install einops==0.6.1
+uv venv --python 3.11
 ```
 
-While these dependencies are installing, download the [Adult Data Set](https://archive.ics.uci.edu/ml/datasets/adult)
+Then, install packages using
+
+```
+uv sync
+```
+
+### Data
+
+Download the [Adult Data Set](https://archive.ics.uci.edu/ml/datasets/adult)
 and store the files in `data/raw/adult`. This results in the following directory:
 
 - `data/raw/adult`
-    - `adult.data`
-    - `adult.names`
-    - `adult.test`
+  - `adult.data`
+  - `adult.names`
+  - `adult.test`
 
-After installing the dependencies and the dataset, call one of the following scripts:
+After installing the dependencies and the dataset, you can run one of the entrypoints:
 
-- `main_hyper.py`: Run hyperparameter tuning, the type of model and encoding can be changed using command line
-  arguments, run `python main_hyper.py --help` for more details.
-- `main_train.py`: Train a model for different seeds using a given set of hyperparameters. The type of model, and other
-  options can be altered using command line arguments. For more details, run `python main_train.py --help`.
+- `hyperparams.py`: Run hyperparameter tuning, the type of model and encoding can be changed using command line
+  arguments, run `python src/tabulardl/entrypoints/hyperparams.py --help` for more details.
+- `train.py`: Train a model for different seeds using a given set of hyperparameters. The type of model, and other
+  options can be altered using command line arguments. For more details, run `python src/tabulardl/entrypoints/train.py --help`.
